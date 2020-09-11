@@ -1,36 +1,49 @@
-// this в методах объекта
-// Расставь отсутствующие this в методах объекта account.
+// переиспользование методов класса
+// Напиши класс StringBuilder.На вход он получает один параметр - строку,
+//   которую записывает в свойство _value.
 
-// В комментариях показаны операции с объектом и ожидаемые результаты.
+// Добавь классу следующий функционал:
 
-const account = {
-  owner: 'Mango',
-  balance: 24000,
-  discount: 0.1,
-  orders: ['order-1', 'order-2', 'order-3'],
-  changeDiscount(value) {
-    this.discount = value; // Write code in this line
-  },
-  showOrders() {
-    return this.orders; // Write code in this line
-  },
-  addOrder(cost, order) {
-    this.balance -= cost; // Write code in this line
-    this.orders.push(order); // Write code in this line
-  },
-};
-const copyAccount = Object.assign({}, account);
-copyAccount.orders = [...account.orders];
-// копируем для автотестов ссылочные типы
+// Геттер value - возвращает текущее значение поля _value
+// Метод append(str) - получает параметр str(строку) и добавляет ее в конец _value
+// Метод prepend(str) - получает параметр str(строку) и добавляет ее в начало value
+// Метод pad(str) - получает параметр str(строку) и добавляет ее в начало и
+// в конец _value
+// Метод pad должен использовать методы append и prepend
 
-account.changeDiscount(0.15);
-console.log(account.discount); // 0.15
+// Write code under this line
+class StringBuilder {
+  constructor(str) {
+    this._value = str;
+  }
 
-console.log(account.showOrders());
-['order-1', 'order-2', 'order-3'];
+  get value() {
+    return this._value;
+  }
 
-account.addOrder(5000, 'order-4');
-console.log(account.balance); // 19000
+  append(str) {
+    this._value += str;
+  }
 
-console.log(account.showOrders());
-['order-1', 'order-2', 'order-3', 'order-4'];
+  prepend(str) {
+    this._value = str + this.value;
+  }
+
+  pad(str) {
+    this.append(str) + this.prepend(str);
+  }
+}
+
+console.log(typeof StringBuilder);
+// 'function'
+
+const builder = new StringBuilder('.');
+
+// builder.append('^');
+console.log(builder.value); // '.^'
+
+// builder.prepend('^');
+console.log(builder.value); // '^.^'
+
+// builder.pad('=');
+console.log(builder.value); // '=^.^='

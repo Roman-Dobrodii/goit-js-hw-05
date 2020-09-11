@@ -1,41 +1,66 @@
-// Callback функция для получения одного вычисляемого значения массива
-// Функции add, sub и mult принимают два параметра - accum и element, возвращает число - сумму, разность или произведение параметров.
+// использование методов класса
+// Напиши класс Storage, который будет создавать объекты для управления складом
+// товаров.При вызове будет получать один аргумент - начальный массив товаров,
+//   и записывать его в свойство items.
 
-// Дополни тело функции reduceArray строкой присвоения accum вызова функции cb.Функция reduceArray должна будет подсчитать сумму или разность
-// или произведение всех элементов массива в зависимости от того какая именно
-// из трех функция(add, mult, sub) будет передана в качестве cb.
+// Добавь методы класса:
 
-const add = (accum, element) => accum + element;
-const mult = (accum, element) => accum * element;
-const sub = (accum, element) => accum - element;
+// getItems() - возвращает массив текущих товаров
+// addItem(item) - получает новый товар и добавляет его к текущим
+// removeItem(item) - получает товар и, если он есть, удаляет его из текущих
 
-function reduceArray(array, cb, initial) {
-  'use strict';
-  let i;
-  let accum;
-  if (arguments.length >= 3) {
-    accum = initial;
-    i = 0;
+// Write code under this line
+
+class Storage {
+  constructor(array) {
+    this.items = array;
   }
-  if (arguments.length === 2) {
-    accum = array[0];
-    i = 1;
+
+  getItems() {
+    return this.items;
   }
-  for (i; i < array.length; i += 1) {
-    const element = array[i];
-    // Write code under this line
-    accum = cb(accum, element);
+
+  addItem(item) {
+    this.items.push(item);
   }
-  return accum;
+
+  removeItem(item) {
+    if (this.items.includes(item)) {
+      this.items.splice(this.items.indexOf(item), 1);
+    }
+  }
 }
 
-const arr = [1, 2, 3, 4, 5];
+console.log(typeof Storage);
+// 'function'
 
-console.log(reduceArray(arr, add)); // 15
-console.log(reduceArray(arr, add, 10)); // 25
+const goods = ['Нанитоиды', 'Пролонгер', 'Железные жупи', 'Антигравитатор'];
 
-console.log(reduceArray(arr, mult)); // 120
-console.log(reduceArray(arr, mult, 10)); // 1200
+const storage = new Storage(goods);
 
-console.log(reduceArray(arr, sub)); // -13
-console.log(reduceArray(arr, sub, 10)); // -5
+console.log(storage.getItems());
+/* [
+  'Нанитоиды',
+  'Пролонгер',
+  'Железные жупи',
+  'Антигравитатор'
+] */
+
+storage.addItem('Дроид');
+console.log(storage.getItems());
+/* [
+  'Нанитоиды',
+  'Пролонгер',
+  'Железные жупи',
+  'Антигравитатор',
+  'Дроид'
+] */
+
+storage.removeItem('Пролонгер');
+console.log(storage.getItems());
+/* [
+  'Нанитоиды',
+  'Железные жупи',
+  'Антигравитатор',
+  'Дроид'
+] */

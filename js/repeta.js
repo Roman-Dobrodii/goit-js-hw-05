@@ -1,710 +1,365 @@
 /*
- * Функция обратного вызова (callback)
- * - Функция может принимать другие функции как параметры
- * - Функция которая передаётся другой функции как аргумент называетс
- *   «функцией обратного (отложенного) вызова» (callback-функция)
- * - Функция которая принимает другую функцию как параметр
- *   или возвращает функцию как результат своей работы называется «функцией высшего порядка»
- */
-
-// const fnA = function (message, callback) {
-//     console.log(message);
-
-//     console.log(callback);
-//     callback(100);
-// };
-
-// const fnB = function (number) {
-//     console.log('Это лог при вызове fnB', number);
-// };
-
-// fnA('qweqwe', fnB);
-
-/*
- * функция doMath(a, b, callback)
- */
-
-const doMath = function (a, b, callback) {
-  const result = callback(a, b);
-
-  console.log(result);
-};
-
-// doMath(2, 3, function (x, y) {
-//     return x + y;
-// });
-
-// doMath(10, 8, function (x, y) {
-//     return x - y;
-// });
-
-/*
- * Отложенный вызов: регистрация событий
- */
-
-const buttonRef = document.querySelector('.js-button');
-
-const handleBtnClick = function () {
-  console.log('Клик по кнопке ' + Date.now());
-};
-
-// buttonRef.addEventListener('click', handleBtnClick);
-
-/*
- * Отложенный вызов: геолокация
- */
-
-const onGetPositionSuccess = function (position) {
-  console.log('Это вызов onGetPositionSuccess');
-  console.log(position);
-};
-
-const onGetPositionError = function (error) {
-  console.log('Это вызов onGetPositionError');
-  console.log(error);
-};
-
-// window.navigator.geolocation.getCurrentPosition(
-//     onGetPositionSuccess,
-//     onGetPositionError,
-// );
-
-/*
- * Отложенный вызов: интервалы
- */
-
-const callback = function () {
-  console.log('Через 2 секунды внутри колбека в таймауте');
-};
-
-// console.log('В коде перед таймаутом');
-// setTimeout(callback, 2000);
-// console.log('В коде после таймаута');
-
-/*
- * Отложенный вызов: http-запрос
- * - API URL: https://pokeapi.co/api/v2/pokemon
- */
-
-const onRequestSuccess = function (response) {
-  console.log('Вызов функции onRequestSuccess после успешного ответа бекенда');
-  console.log(response);
-};
-
-// fetch('https://pokeapi.co/api/v2/pokemon')
-//     .then(res => res.json())
-//     .then(onRequestSuccess);
-
-/*
- * Фильтр
- */
-
-const filter = function (array, test) {
-  const filteredArray = [];
-
-  for (const el of array) {
-    console.log(el);
-    const passed = test(el);
-
-    if (passed) {
-      filteredArray.push(el);
-    }
-  }
-
-  return filteredArray;
-};
-
-// 1. надо передать функцию
-// 2. функция получает элемент массива
-// 3. если элемент массива удовлетворяет условию то функция вернет true
-// 3. если элемент массива НЕ удовлетворяет условию то функция вернет false
-
-const callback1 = function (value) {
-  return value >= 3;
-};
-
-const r1 = filter([1, 2, 3, 4, 5], callback1);
-console.log(r1);
-
-const callback2 = function (value) {
-  return value <= 4;
-};
-
-const r2 = filter([1, 2, 3, 4, 5, 6, 7, 8], callback2);
-console.log(r2);
-
-const fruits = [
-  { name: 'apples', quantity: 200, isFresh: true },
-  { name: 'grapes', quantity: 150, isFresh: false },
-  { name: 'bananas', quantity: 100, isFresh: true },
-];
-
-const getFruitsWithQuantity = function (fruit) {
-  return fruit.quantity >= 120;
-};
-
-const r3 = filter(fruits, getFruitsWithQuantity);
-console.log(r3);
-
-/*
- * Функция результатом своей работы может возвращать другую функцию.
+ * Прототип объекта
  *
- * Возвращаемая функция во время вызова будет иметь доступ
- * ко всем локальным переменным (области видимости)
- * родительской функции (той из которой её вернули),
- * это называется «замыкание».
+ * - https://miro.com/app/board/o9J_ku0WE0g=/
+ * - Object.create()
+ * - [[Prototype]] и __proto__
+ * - Object.getPrototypeOf()
+ * - Собственные свойства и Object.prototype.hasOwnProperty()
+ * - Цепочка прототипов
  */
 
-const fnA = function (parameter) {
-  const innerVariable = 'значение внутренней переменной функции fnA';
+// const objC = {
+//   z: 5,
+// };
 
-  const innerFunction = function () {
-    console.log(parameter);
-    console.log(innerVariable);
-    console.log('Это вызов innerFunction');
-  };
+// const objB = Object.create(objC);
+// objB.y = 2;
 
-  return innerFunction;
-};
+// const objA = Object.create(objB);
+// objA.x = 1;
 
-// const fnB = fnA(555);
+// console.log(objA.z);
 
-// fnB();
+// console.log('objA', objA);
 
-// console.log(fnB);
+// console.log(objA.hasOwnProperty('x'));
+
+// const dummyObj = Object.create({ message: 'Это свойство объекта протортипа' });
+// dummyObj.message = 'Это собственное свойство объекта';
+// console.log('dummyObj', dummyObj);
+
+// console.log(dummyObj.message);
+
+//  'Это собственное свойство объекта'
+//  'Это свойство на объекте-прототипе'
 
 /*
- * Поварёнок
+ * Алгоритм поиска свойства в цепочке прототипов:
+ * 1. Поиск начинается в собственных свойствах
+ * 2. Если свойства нет в сообственных, поиск переходит к цепочке прототипов
+ * 3. Поиск прекращается при первом совпадении (есть такое свойство)
+ * 4. Возвращается значение свойства
  */
-// const makeDish = function (sheffName, dish) {
-//     console.log(`${sheffName} готовит ${dish}`);
-// };
 
-// makeDish('Mango', 'пирожок');
-// makeDish('Mango', 'омлет');
-// makeDish('Mango', 'чай');
+// const objA = Object.create({ z: 5 });
+// objA.y = 100;
+// console.log('objA', objA);
 
-// makeDish('Poly', 'котлеты');
-// makeDish('Poly', 'супик');
-// makeDish('Poly', 'кофе');
-
-const makeSheff = function (name) {
-  const innverVar = 555;
-  const message = 'hello';
-
-  const makeDish = function (dish) {
-    console.log(message);
-    console.log(innverVar);
-    console.log(`${name} готовит ${dish}`);
-  };
-
-  return makeDish;
-};
-
-// const mango = makeSheff('Mango');
-
-// console.dir(mango);
-
-// mango('котлеты');
-// mango('пирожок');
-
-// const poly = makeSheff('Poly');
-
-// console.dir(poly);
-
-// poly('чай');
-// poly('омлет');
-
-// console.dir(mango);
+// console.log(objA.x);
 
 /*
- * Округлятор 🤷‍♂️
+ * Основы ООП: класс, экземпляр (объект), интерфейс
  */
-
-// const floatingPoint = 3.456789;
-// const someInt = Math.round(floatingPoint); // 3
-// const withDecimals = Number(floatingPoint.toFixed(2)); // 3.46
-
-// const rounder = function (number, places) {
-//     return Number(number.toFixed(places));
-// };
-
-// console.log(rounder(3.4567, 2));
-// console.log(rounder(3.4567, 3));
-// console.log(rounder(5.1234, 2));
-// console.log(rounder(3.4567, 3));
-
-const rounder = function (places) {
-  return function (number) {
-    return Number(number.toFixed(places));
-  };
-};
-
-// const rounder2 = rounder(2);
-// const rounder3 = rounder(3);
-
-// console.dir(rounder2);
-// console.dir(rounder3);
-
-// console.log(rounder2(3.4567));
-// console.log(rounder2(5.4512312312367));
-// console.log(rounder3(3.4567));
-// console.log(rounder2(5.1234));
-// console.log(rounder3(3.4567));
-// console.log(rounder3(10.67667));
 
 /*
- * Приватные данные и функции - скрытие реализации, интерфейс
+ * Функции-конструкторы
+ * - Именование
+ * - Оператор new
+ * - Свойство Function.prototype
  */
 
-const salaryManagerFactory = function (employeeName, baseSalary = 0) {
-  let salary = baseSalary;
+const Car = function ({ brand, model, price } = {}) {
+  // const { brand, model, price } = config;
+  // 2. Функция вызывается в контексте созданного объекта,
+  //    то есть в this записывается ссылка на него
+  this.brand = brand;
+  this.model = model;
+  this.price = price;
 
-  return {
-    raise(amount) {
-      if (amount > 1000) {
-        return 'Ты офигел?';
-      }
+  // 3. В свойство this.__proto__ записывается ссылка на обьект Car.prototype
+  //    тоесть Car.prototype это ПРОТОТИП будущего обьекта (экземпляра)
 
-      salary += amount;
-    },
-    lower(amount) {
-      salary -= amount;
-    },
-    current() {
-      return `Текущая зарпалата ${employeeName} - ${salary}`;
-    },
-  };
+  // 4. Ссылка на обьект возвращается в место вызова new Car
 };
 
-const salaryManager = salaryManagerFactory('Mango', 5000);
+Car.prototype.sayHi = function () {
+  console.log('Car.prototype.sayHi -> this', this);
+  console.log('Hello :) ');
+};
 
-console.log(salaryManager.current());
+Car.prototype.changePrice = function (newPrice) {
+  this.price = newPrice;
+};
 
-console.log(salaryManager.raise(10000000));
+// console.log(Car.prototype);
 
-console.log(salaryManager.current());
+// 1. Если функция вызывается через new, создаётся пустой объект
+// const myCar = new Car({
+//   brand: 'Audi',
+//   model: 'Q3',
+//   price: 35000,
+// });
+// console.log(myCar);
 
-// const myLibFactory = function () {
-//     let value = 0;
+// myCar.sayHi();
+// myCar.changePrice(10000);
 
-//     const add = function (num) {
-//         value += num;
-//     };
+// const myCar2 = new Car({ brand: 'BMW', model: 'X6', price: 50000 });
+// console.log(myCar2);
 
-//     return {
-//         add: add,
-//         getValue() {
-//             return value;
-//         },
-//     };
-// };
+// myCar2.sayHi();
 
-// const myLib = myLibFactory();
+// const myCar3 = new Car({ brand: 'Audi', model: 'A6', price: 65000 });
+// console.log(myCar3);
 
-// console.dir(myLib.getValue);
+// myCar3.sayHi();
 
-// console.log(myLib);
-// console.log(myLib.getValue());
-// myLib.add(10);
-// console.log(myLib.getValue());
+const User = function ({ email, password } = {}) {
+  this.email = email;
+  this.password = password;
+};
+
+console.log(User.prototype);
+
+User.prototype.changeEmail = function (newMail) {
+  this.email = newMail;
+};
+
+const mango = new User({ email: 'mango@mail.com', password: 1111111 });
+
+mango.changeEmail('my-new-mail@mail.com');
+// console.log(mango);
 
 /*
- * Стрелочные функции
- * - Объявление
- * - Явный и неявный возврат
- * - Аргументы
- * - Неявный возврат объекта
+ * Статические свойства и методы
+ * - Статические свойства и методы доступны только на самом конструкторе
+ * - В статических методах не нужен this
  */
 
-// const add = function (a, b, c) {
-//     console.log(arguments);
-//     return a + b + c;
-// };
+User.message =
+  'Я статическое свойство, меня нет на экземплярах или в прототипе.';
 
-// const addArrow = (a, b, c) => {
-//     return a + b + c;
-// };
+User.logInfo = function (obj) {
+  console.log('User.logInfo -> obj', obj);
+  console.log('Почта: ', obj.email);
+  console.log('Пароль: ', obj.password);
+};
 
-// console.log(add(5, 10, 15));
-// console.log(addArrow(5, 10, 15));
+User.logInfo(mango);
 
-// const fnA = function () {
-//   return {
-//     a: 5,
-//   };
-// };
+// Object.keys()
+// Object.value()
 
-// console.log(fnA());
+// 1. У каждого обьекта есть свойство __proto__
+// 2. В этом свойстве лежит ссылка на его ПРОТОТИП, то есть другой обьект
+// 3. При создании литера обьекта, в свойство __proto__ записывается ссылка на Функция.prototype
+// 4. Функция-конструктор это просто функция :)
+// 5. Всю магию делает оператор new
+// 6. Если функция вызывается через new, создаётся пустой объект
+// 7. Функция вызывается в контексте созданного объекта
+// 8. В свойство this.__proto__ записывается ссылка на обьект Функция.prototype
+// 9. Ссылка на обьект возвращается в место вызова new Фунукция()
 
-// const arrowFnA = () => ({ arrowA: 5 });
+const CounterPlugin = function ({
+  rootSelector,
+  initialValue = 0,
+  step = 1,
+  onUpdate = () => null,
+} = {}) {
+  this._value = initialValue;
+  this._step = step;
+  this._refs = this._getRefs(rootSelector);
 
-// console.log(arrowFnA());
+  this.onUpdate = onUpdate;
 
-const filter = (array, test) => {
-  const filteredArray = [];
+  this._bindEvents();
+  this.updateValueUI();
+};
 
-  for (const el of array) {
-    console.log(el);
-    const passed = test(el);
+CounterPlugin.prototype._getRefs = function (rootSelector) {
+  const refs = {};
+  refs.container = document.querySelector(rootSelector);
+  refs.incrementBtn = refs.container.querySelector('[data-increment]');
+  refs.decrementBtn = refs.container.querySelector('[data-decrement]');
+  refs.value = refs.container.querySelector('[data-value]');
 
-    if (passed) {
-      filteredArray.push(el);
-    }
+  return refs;
+};
+
+CounterPlugin.prototype._bindEvents = function () {
+  this._refs.incrementBtn.addEventListener('click', () => {
+    console.log('CounterPlugin.prototype._bindEvents -> this', this);
+    this.increment();
+    this.updateValueUI();
+  });
+
+  this._refs.decrementBtn.addEventListener('click', () => {
+    console.log('CounterPlugin.prototype._bindEvents -> this', this);
+    this.decrement();
+    this.updateValueUI();
+  });
+};
+
+CounterPlugin.prototype.updateValueUI = function () {
+  this._refs.value.textContent = this._value;
+
+  this.onUpdate();
+};
+
+CounterPlugin.prototype.increment = function () {
+  this._value += this._step;
+};
+
+CounterPlugin.prototype.decrement = function () {
+  this._value -= this._step;
+};
+
+new CounterPlugin({
+  rootSelector: '#counter-1',
+  step: 10,
+  initialValue: 100,
+  onUpdate: () => console.log('Это мой кастомный колбек для onUpdate'),
+});
+
+new CounterPlugin({ rootSelector: '#counter-2', step: 2 });
+
+/*
+ * Классы
+ * 🐷 - объявление
+ * 🐷 - конструктор
+ * 🐷 - методы
+ * 🐷 - static
+ * 🐷 - приватные свойства
+ * 🐷 - синтаксис публичных свойства и методы классов
+ * 🐷 - геттеры и сеттеры
+ */
+
+class Car {
+  static description = 'Класс описывающий автомобиль';
+
+  static logInfo(carObj) {
+    console.log('Car.logInfo -> carObj', carObj);
   }
 
-  return filteredArray;
-};
+  constructor({ brand, model, price } = {}) {
+    this.brand = brand;
+    this._model = model;
+    this._price = price;
+  }
 
-// const callback1 = value => value >= 3;
+  get price() {
+    return this._price;
+  }
 
-const r1 = filter([1, 2, 3, 4, 5], value => value >= 3);
+  set price(newPrice) {
+    this._price = newPrice;
+  }
 
-console.log(r1);
+  get model() {
+    return this._model;
+  }
 
-// const callback2 = value => value <= 4;
+  set model(newModel) {
+    this._model = newModel;
+  }
+}
 
-const r2 = filter([1, 2, 3, 4, 5, 6, 7, 8], value => value <= 4);
-console.log(r2);
+const carInstance = new Car({
+  brand: 'Audi',
+  model: 'Q3',
+  price: 35000,
+});
 
-const fruits = [
-  { name: 'apples', quantity: 200, isFresh: true },
-  { name: 'grapes', quantity: 150, isFresh: false },
-  { name: 'bananas', quantity: 100, isFresh: true },
-];
+console.log(carInstance.model);
+carInstance.model = 'Q4';
+console.log(carInstance.model);
 
-// const getFruitsWithQuantity = fruit => fruit.quantity >= 120;
+console.log(carInstance.price);
+carInstance.price = 50000;
+console.log(carInstance.price);
 
-const r3 = filter(fruits, fruit => fruit.quantity >= 120);
-console.log(r3);
+console.log(carInstance);
 
 /*
- * Функция это частный случай объекта -> ССЫЛОЧНЫЙ ТИП
+ * Наследование
+ *  - extends
+ *  - super()
  */
 
-// console.log('[] === []: ', [] === []);
-// console.log('{} === {}: ', {} === {});
+class Hero {
+  constructor({ name = 'hero', xp = 0 } = {}) {
+    this.name = name;
+    this.xp = xp;
+  }
+
+  gainXp(amount) {
+    console.log(`${this.name} получает ${amount} опыта`);
+    this.xp += amount;
+  }
+}
+
+class Warrior extends Hero {
+  constructor({ weapon, ...restProps } = {}) {
+    super(restProps);
+
+    this.weapon = weapon;
+  }
+
+  attack() {
+    console.log(`${this.name} атакует используя ${this.weapon}`);
+  }
+}
+
+class Berserk extends Warrior {
+  constructor({ warcry, ...restProps } = {}) {
+    super(restProps);
+
+    this.warcry = warcry;
+  }
+
+  babyRage() {
+    console.log(this.warcry);
+  }
+}
+
+const ajax = new Berserk({
+  name: 'ajax',
+  xp: 500,
+  weapon: 'axe',
+  warcry: 'waaaaaaaah',
+});
+
+// console.log(ajax);
+
+// ajax.babyRage();
+// ajax.attack();
+// ajax.gainXp();
+
+class Mage extends Hero {
+  constructor({ spells, ...restProps } = {}) {
+    super(restProps);
+
+    this.spells = spells;
+  }
+
+  cast() {
+    console.log(`${this.name} что-то там кастует 🧙‍♂️`);
+  }
+}
+
+// const mango = new Warrior({ name: 'mango', xp: 1000, weapon: 'алебарда' });
+// console.log(mango);
+// mango.attack();
+// mango.gainXp(1000);
+
+// const poly = new Mage({ name: 'poly', xp: 500, spells: ['фаербол'] });
+// console.log(poly);
+// poly.cast();
+// poly.gainXp(200);
+
 // console.log(
-//     'function() {} === function() {}: ',
-//     function () {} === function () {},
+//     'mango.__proto__ === Warrior.prototype ',
+//     mango.__proto__ === Warrior.prototype,
+// );
+// // console.log(Object.getPrototypeOf(mango) === Warrior.prototype);
+
+// console.log(
+//     'Warrior.prototype.__proto__ === Hero.prototype ',
+//     Warrior.prototype.__proto__ === Hero.prototype,
 // );
 
-// const fnA = function () {
-//     console.log('hello');
-// };
-
-// const fnB = fnA;
-// console.log('fnB === fnA: ', fnB === fnA);
-
-/*
- * Контекст (this)
- *    - Где и как была объявлена функция НЕ ИМЕЕТ НИКАКОГО ВЛИЯНИЯ на контекст.
- *    - Контекст определяется В МОМЕНТ ВЫЗОВА ФУНКЦИИ, если он не привязан явно.
- */
-
-/*
- * Как метод объекта. В контексте объекта.
- */
-
-// const user = {
-//     tag: 'Mango',
-//     showTag() {
-//         console.log('showTag -> this', this);
-//     },
-// };
-
-// user.showTag();
-
-/*
- * Вызов без контекста
- * - В строгом режиме = undefined
- * - Не в строгом режиме = window
- */
-
-// const foo = function () {
-//     console.log('foo -> this', this);
-// };
-
-// foo();
-
-/*
- * Как метод объекта, но объявлена как внешняя функция.
- * В контексте объекта.
- */
-
-// const showTag = function () {
-//     console.log('showTag -> this', this);
-//     console.log('showTag -> this.tag', this.tag);
-// };
-
-// showTag();
-
-// const user = {
-//     tag: 'Mango',
-// };
-
-// user.showUserTag = showTag;
-// console.log('user', user);
-
-// user.showUserTag();
-
-/*
- * Вызов без контекста, но объявлена как метод объекта.
- */
-
-// const user = {
-//     tag: 'Mango',
-//     showTag() {
-//         console.log('showTag -> this', this);
-//         console.log('showTag -> this.tag', this.tag);
-//     },
-// };
-
-// user.showTag();
-
-// const outerShowTag = user.showTag;
-
-// outerShowTag();
-
-/*
- * Контекст в callback-функциях
- */
-
-// const user = {
-//     tag: 'Mango',
-//     showTag() {
-//         console.log('showTag -> this', this);
-//         console.log('showTag -> this.tag', this.tag);
-//     },
-// };
-
-// const invokeAction = function (action) {
-//     console.log(action);
-
-//     action();
-// };
-
-// invokeAction(user.showTag);
-
-/*
- * Тренируемся 1
- */
-
-// const fn = function () {
-//     console.log('fn -> this', this);
-// };
-
-// fn(); // Какой this ???
-
-/*
- * Тренируемся 2
- */
-
-// const book = {
-//     title: 'React for beginners',
-//     showThis() {
-//         console.log('showThis -> this', this);
-//     },
-//     showTitle() {
-//         console.log('showTitle -> this.title', this.title);
-//     },
-// };
-
-// book.showThis(); // Какой this ???
-
-// const outerShowThis = book.showThis;
-// outerShowThis(); // Какой this ???
-
-// const outerShowTitle = book.showTitle;
-// outerShowTitle(); // Какой this ???
-
-/*
- * Тренируемся 3
- */
-
-// const makeChangeColor = function () {
-//     const changeColor = function (color) {
-//         console.log('changeColor -> this', this);
-//         // this.color = color;
-//     };
-
-//     // changeColor(); // Какой this ???
-
-//     const sweater = {
-//         color: 'teal',
-//     };
-
-//     sweater.updateColor = changeColor;
-
-//     // sweater.updateColor('red'); // Какой this ???
-
-//     return sweater.updateColor;
-// };
-
-// const swapColor = makeChangeColor();
-
-// swapColor('blue'); // Какой this ???
-
-/*
- * Тренируемся 4
- */
-
-// const makeChangeColor = function () {
-//     const changeColor = function (color) {
-//         console.log('changeColor -> this', this);
-//     };
-
-//     return changeColor;
-// };
-
-// const updateColor = makeChangeColor();
-// updateColor('yellow'); // Какой this ???
-
-// const hat = {
-//     color: 'blue',
-//     updateColor: updateColor,
-// };
-
-// hat.updateColor('orange'); // Какой this ???
-
-/*
- * Тренируемся 5
- */
-
-const counter = {
-  value: 0,
-  increment(value) {
-    console.log('increment -> this', this);
-    this.value += value;
-  },
-  decrement(value) {
-    console.log('decrement -> this', this);
-    this.value -= value;
-  },
-};
-
-const updateCounter = function (value, operation) {
-  operation(value);
-};
-
-updateCounter(10, counter.increment);
-updateCounter(5, counter.decrement);
-
-/*
- * call и apply
- */
-// const showThis = function (a, b, arr) {
-//     console.log(a, b, arr);
-//     console.log('showThis -> this', this);
-// };
-
-// showThis();
-
-// const objA = {
-//     a: 5,
-//     b: 10,
-// };
-
-// showThis.call(objA, 5, 1, [100, 200, 300]);
-// showThis.apply(objA, [5, 1, [100, 200, 300]]);
-
-// const objB = {
-//     x: 788,
-//     y: 25,
-// };
-
-// showThis.call(objB, 1, 1, 2);
-// showThis.apply(objB, [1, 1, 2]);
-
-// showThis();
-
-const changeColor = function (color) {
-  console.log('changeColor -> this', this);
-  this.color = color;
-};
-
-const hat = {
-  color: 'black',
-};
-
-// changeColor.call(hat, 'orange');
-// console.log(hat);
-
-const sweater = {
-  color: 'green',
-};
-
-// changeColor.call(sweater, 'blue');
-// console.log(sweater);
-
-/*
- * bind
- */
-
-const changeHatColor = changeColor.bind(hat);
-const changeSweaterColor = changeColor.bind(sweater);
-
-// changeHatColor('yellow');
-// console.log(hat);
-
-// changeSweaterColor('red');
-// console.log(sweater);
-
-/*
- * counter
- */
-
-const counter = {
-  value: 0,
-  increment(value) {
-    console.log('increment -> this', this);
-    this.value += value;
-  },
-  decrement(value) {
-    console.log('decrement -> this', this);
-    this.value -= value;
-  },
-};
-
-const updateCounter = function (value, operation) {
-  operation(value);
-};
-
-// updateCounter(10, counter.increment.bind(counter));
-// updateCounter(5, counter.decrement.bind(counter));
-
-// console.log(counter);
-
-const counter = {
-  value: 0,
-  increment() {
-    console.log('increment -> this', this);
-    this.value += 1;
-  },
-  decrement() {
-    console.log('decrement -> this', this);
-    this.value -= 1;
-  },
-};
-
-const decrementBtn = document.querySelector('.js-decrement');
-const incrementBtn = document.querySelector('.js-increment');
-const valueEl = document.querySelector('.js-value');
-
-decrementBtn.addEventListener('click', function () {
-  console.log('Кликнули на декремент');
-
-  counter.decrement();
-  console.log(counter);
-  valueEl.textContent = counter.value;
-});
-
-incrementBtn.addEventListener('click', function () {
-  console.log('Кликнули на инкремент');
-
-  counter.increment();
-  console.log(counter);
-  valueEl.textContent = counter.value;
-});
-
-console.log(window);
+// console.log(
+//     'Hero.prototype.__proto__ === Object.prototype ',
+//     Hero.prototype.__proto__ === Object.prototype,
+// );
